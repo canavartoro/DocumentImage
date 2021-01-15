@@ -1,0 +1,91 @@
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+using System.Data.SqlTypes;
+using Microsoft.SqlServer.Server;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Drawing;
+
+public class TcpCaptureClient
+{
+    [Microsoft.SqlServer.Server.SqlProcedure()]
+    public static void CaptureImage(SqlInt32 recId, SqlString desc)
+    {
+        try
+        {
+            System.Net.ServicePointManager.Expect100Continue = false;
+            using (System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient())
+            using (SqlConnection connection = new SqlConnection("context connection=true;"))
+            {
+                connection.Open();
+                byte[] image = null;
+                SqlCommand command = connection.CreateCommand();
+
+                #region ReadFromNetwork
+                clientSocket.Connect("127.0.0.1", 8888);
+                using (NetworkStream serverStream = clientSocket.GetStream())
+                {
+                    if (clientSocket != null && serverStream != null && serverStream.CanWrite)
+                    {
+                        byte[] outStream = Encoding.GetEncoding("Windows-1254").GetBytes("get-image");
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        serverStream.Flush();
+
+                        if (serverStream.CanRead)
+                        {
+                            //image = new byte[clientSocket.ReceiveBufferSize];
+                            Image bitmap = Image.FromStream(serverStream);
+                            //serverStream.Read(image, 0, image.Length);
+                            ImageConverter _imageConverter = new ImageConverter();
+                            image = (byte[])_imageConverter.ConvertTo(bitmap, typeof(byte[]));
+                        }
+                        serverStream.Flush();
+                        serverStream.Close();
+                    }
+                } 
+                #endregion
+
+                command.CommandText = "UPDATE dbo.Weigh2 SET DocImage = @DocImage, [Desc] = @Desc WHERE seq = @Id";
+                command.Parameters.AddWithValue("Id", recId);
+                command.Parameters.AddWithValue("DocImage", image);
+                command.Parameters.AddWithValue("Desc", desc);
+                command.ExecuteScalar();
+            }
+
+            SqlContext.Pipe.Send("Bitti");
+
+        }
+        catch (SqlException ex)
+        {
+            SqlContext.Pipe.Send("An error occured" + ex.Message + ex.StackTrace);
+        }
+        finally
+        {
+        }
+    }
+}
+
+
+/*
+ DROP PROC sp_CaptureImage
+
+DROP ASSEMBLY  [SqlCaptureImage]
+
+CREATE ASSEMBLY [SqlCaptureImage]
+AUTHORIZATION dbo
+FROM 'D:\Projeler\Calismalar\Semih\DocumentImageCapture\SqlServerImageCapture\bin\Debug\SqlServerImageCapture.dll'
+WITH PERMISSION_SET = SAFE --{ SAFE | EXTERNAL_ACCESS | UNSAFE }
+GO
+
+
+CREATE PROCEDURE  sp_CaptureImage      
+(      
+    @RowId INTEGER,      
+    @Description NVARCHAR(1024)     
+)      
+AS EXTERNAL NAME SqlCaptureImage.TcpCaptureClient.CaptureImage;      
+GO
+     */

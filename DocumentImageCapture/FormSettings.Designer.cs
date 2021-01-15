@@ -29,22 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSettings));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.chkKopyala = new System.Windows.Forms.CheckBox();
             this.label19 = new System.Windows.Forms.Label();
             this.cmdtracelavel = new System.Windows.Forms.ComboBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txtftppass = new System.Windows.Forms.TextBox();
-            this.txtftpuser = new System.Windows.Forms.TextBox();
-            this.txtftpip = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.nmftpport = new System.Windows.Forms.NumericUpDown();
             this.nmbranchid = new System.Windows.Forms.NumericUpDown();
             this.nmTimeout = new System.Windows.Forms.NumericUpDown();
             this.nmcoid = new System.Windows.Forms.NumericUpDown();
@@ -86,8 +78,6 @@
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nmftpport)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmbranchid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmTimeout)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmcoid)).BeginInit();
@@ -148,10 +138,8 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.chkKopyala);
             this.tabPage1.Controls.Add(this.label19);
             this.tabPage1.Controls.Add(this.cmdtracelavel);
-            this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.nmbranchid);
             this.tabPage1.Controls.Add(this.nmTimeout);
             this.tabPage1.Controls.Add(this.nmcoid);
@@ -178,16 +166,6 @@
             this.tabPage1.Text = "Ayarlar";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // chkKopyala
-            // 
-            this.chkKopyala.AutoSize = true;
-            this.chkKopyala.Location = new System.Drawing.Point(143, 206);
-            this.chkKopyala.Name = "chkKopyala";
-            this.chkKopyala.Size = new System.Drawing.Size(133, 21);
-            this.chkKopyala.TabIndex = 6;
-            this.chkKopyala.Text = "Dosyayı kopyala";
-            this.chkKopyala.UseVisualStyleBackColor = true;
-            // 
             // label19
             // 
             this.label19.AutoSize = true;
@@ -206,92 +184,6 @@
             this.cmdtracelavel.Name = "cmdtracelavel";
             this.cmdtracelavel.Size = new System.Drawing.Size(159, 24);
             this.cmdtracelavel.TabIndex = 7;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.txtftppass);
-            this.groupBox2.Controls.Add(this.txtftpuser);
-            this.groupBox2.Controls.Add(this.txtftpip);
-            this.groupBox2.Controls.Add(this.label18);
-            this.groupBox2.Controls.Add(this.label17);
-            this.groupBox2.Controls.Add(this.label16);
-            this.groupBox2.Controls.Add(this.nmftpport);
-            this.groupBox2.Location = new System.Drawing.Point(334, 157);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox2.Size = new System.Drawing.Size(395, 164);
-            this.groupBox2.TabIndex = 16;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "FTP Ayarları";
-            // 
-            // txtftppass
-            // 
-            this.txtftppass.Location = new System.Drawing.Point(118, 99);
-            this.txtftppass.Margin = new System.Windows.Forms.Padding(4);
-            this.txtftppass.Name = "txtftppass";
-            this.txtftppass.PasswordChar = '#';
-            this.txtftppass.Size = new System.Drawing.Size(189, 22);
-            this.txtftppass.TabIndex = 2;
-            // 
-            // txtftpuser
-            // 
-            this.txtftpuser.Location = new System.Drawing.Point(118, 73);
-            this.txtftpuser.Margin = new System.Windows.Forms.Padding(4);
-            this.txtftpuser.Name = "txtftpuser";
-            this.txtftpuser.Size = new System.Drawing.Size(189, 22);
-            this.txtftpuser.TabIndex = 1;
-            // 
-            // txtftpip
-            // 
-            this.txtftpip.Location = new System.Drawing.Point(118, 48);
-            this.txtftpip.Margin = new System.Windows.Forms.Padding(4);
-            this.txtftpip.Name = "txtftpip";
-            this.txtftpip.Size = new System.Drawing.Size(189, 22);
-            this.txtftpip.TabIndex = 0;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(16, 103);
-            this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(96, 17);
-            this.label18.TabIndex = 0;
-            this.label18.Text = "* FTP Parola :";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(4, 77);
-            this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(107, 17);
-            this.label17.TabIndex = 0;
-            this.label17.Text = "* FTP Kullanıcı :";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(16, 51);
-            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(97, 17);
-            this.label16.TabIndex = 0;
-            this.label16.Text = "* FTP IP Port :";
-            // 
-            // nmftpport
-            // 
-            this.nmftpport.Location = new System.Drawing.Point(309, 47);
-            this.nmftpport.Margin = new System.Windows.Forms.Padding(4);
-            this.nmftpport.Maximum = new decimal(new int[] {
-            99999999,
-            0,
-            0,
-            0});
-            this.nmftpport.Name = "nmftpport";
-            this.nmftpport.Size = new System.Drawing.Size(75, 22);
-            this.nmftpport.TabIndex = 3;
             // 
             // nmbranchid
             // 
@@ -671,6 +563,7 @@
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "FormSettings";
@@ -680,9 +573,6 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nmftpport)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmbranchid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmTimeout)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmcoid)).EndInit();
@@ -719,18 +609,9 @@
         private System.Windows.Forms.NumericUpDown nmoraport;
         private System.Windows.Forms.NumericUpDown nmTimeout;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox txtftppass;
-        private System.Windows.Forms.TextBox txtftpuser;
-        private System.Windows.Forms.TextBox txtftpip;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.ComboBox cmdtracelavel;
-        private System.Windows.Forms.NumericUpDown nmftpport;
         private System.Windows.Forms.ErrorProvider errorProvider1;
-        private System.Windows.Forms.CheckBox chkKopyala;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ListView listKamera;
         private System.Windows.Forms.ColumnHeader columnHeader1;

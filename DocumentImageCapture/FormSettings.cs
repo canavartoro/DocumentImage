@@ -27,38 +27,18 @@ namespace DocumentImageCapture
         {
             StringBuilder str = new StringBuilder();
             errorProvider1.Clear();
-            if (chkKopyala.Checked)
+
+            if (string.IsNullOrWhiteSpace(txtHedefKlasor.Text))
             {
-                if (string.IsNullOrWhiteSpace(txtHedefKlasor.Text))
-                {
-                    errorProvider1.SetError(txtHedefKlasor, "Hedef klasör adı boş bırakılamaz!");
-                    str.AppendLine("Hedef klasör adı boş bırakılamaz!");
-                }
-                else
-                {
-                    if (!Directory.Exists(txtHedefKlasor.Text))
-                    {
-                        errorProvider1.SetError(txtHedefKlasor, "Hedef klasör adı hatalı!");
-                        str.AppendLine("Hedef klasör adı hatalı!");
-                    }
-                }
+                errorProvider1.SetError(txtHedefKlasor, "Hedef klasör adı boş bırakılamaz!");
+                str.AppendLine("Hedef klasör adı boş bırakılamaz!");
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(txtftpip.Text))
+                if (!Directory.Exists(txtHedefKlasor.Text))
                 {
-                    errorProvider1.SetError(txtftpip, "FTP sunucu IP boş olamaz!");
-                    str.AppendLine("FTP sunucu IP boş olamaz!");
-                }
-                if (string.IsNullOrWhiteSpace(txtftpuser.Text))
-                {
-                    errorProvider1.SetError(txtftpuser, "FTP user name boş olamaz!");
-                    str.AppendLine("FTP user name boş olamaz!");
-                }
-                if (string.IsNullOrWhiteSpace(txtftppass.Text))
-                {
-                    errorProvider1.SetError(txtftppass, "FTP password boş olamaz!");
-                    str.AppendLine("FTP password boş olamaz!");
+                    errorProvider1.SetError(txtHedefKlasor, "Hedef klasör adı hatalı!");
+                    str.AppendLine("Hedef klasör adı hatalı!");
                 }
             }
 
@@ -105,16 +85,11 @@ namespace DocumentImageCapture
             AppSettingHelper.Default.orahost = txtHost.Text;
             AppSettingHelper.Default.oraservis = txtServis.Text;
             AppSettingHelper.Default.hedefklasor = txtHedefKlasor.Text;
-            AppSettingHelper.Default.ftphost = txtftpip.Text;
-            AppSettingHelper.Default.ftpuser = txtftpuser.Text;
-            AppSettingHelper.Default.ftppass = txtftppass.Text;
             AppSettingHelper.Default.timeout = (int)nmTimeout.Value;
             AppSettingHelper.Default.userid = (int)nmuserid.Value;
             AppSettingHelper.Default.oraport = (int)nmoraport.Value;
             AppSettingHelper.Default.coid = (int)nmcoid.Value;
             AppSettingHelper.Default.branchid = (int)nmbranchid.Value;
-            AppSettingHelper.Default.ftpport = (int)nmftpport.Value;
-            AppSettingHelper.Default.kopyala = chkKopyala.Checked;
 
             //Properties.Settings.Default.Save();
             //Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -137,16 +112,11 @@ namespace DocumentImageCapture
             txtHost.Text = AppSettingHelper.Default.orahost;
             txtServis.Text = AppSettingHelper.Default.oraservis;
             txtHedefKlasor.Text = AppSettingHelper.Default.hedefklasor;
-            txtftpip.Text = AppSettingHelper.Default.ftphost;
-            txtftpuser.Text = AppSettingHelper.Default.ftpuser;
-            txtftppass.Text = AppSettingHelper.Default.ftppass;
             nmTimeout.Value = AppSettingHelper.Default.timeout;
             nmuserid.Value = AppSettingHelper.Default.userid;
             nmoraport.Value = AppSettingHelper.Default.oraport;
             nmbranchid.Value = AppSettingHelper.Default.branchid;
             nmcoid.Value = AppSettingHelper.Default.coid;
-            nmftpport.Value = AppSettingHelper.Default.ftpport;
-            chkKopyala.Checked = AppSettingHelper.Default.kopyala;
         }
 
         private void btnHedefFold_Click(object sender, EventArgs e)

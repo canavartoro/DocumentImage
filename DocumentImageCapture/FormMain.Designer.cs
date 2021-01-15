@@ -67,8 +67,9 @@
             // 
             // richTrace
             // 
-            this.richTrace.BackColor = System.Drawing.SystemColors.Info;
+            this.richTrace.BackColor = System.Drawing.SystemColors.ControlText;
             this.richTrace.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richTrace.ForeColor = System.Drawing.SystemColors.Window;
             this.richTrace.Location = new System.Drawing.Point(0, 27);
             this.richTrace.Name = "richTrace";
             this.richTrace.Size = new System.Drawing.Size(1349, 194);
@@ -210,8 +211,10 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.Text = "Döküman Resim İzleme";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

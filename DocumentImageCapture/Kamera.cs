@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Collections;
 using mshtml;
+using System.Threading;
+using System.Drawing.Imaging;
 
 namespace DocumentImageCapture
 {
@@ -18,12 +20,19 @@ namespace DocumentImageCapture
     public class Kamera
     {
         [NonSerialized]
-        private Timer timer, timerCheck;
+        private System.Windows.Forms.Timer timer, timerCheck;
         [NonSerialized]
         private DataProvider data;
         [NonSerialized]
         private WebBrowser webBrowser;
         public const string SELECT_STRING = "SELECT TOP 1 seq FROM dbo.Weigh2 WITH (NOLOCK) WHERE WeighTime1 = '{0}'";
+
+        private volatile static byte[] captureImage = null;
+        public /*volatile*/ static byte[] CaptureImage
+        {
+            get { return captureImage; }
+            set { captureImage = value; }
+        }
 
         public Kamera() { }
 
@@ -42,78 +51,18 @@ namespace DocumentImageCapture
 
             webBrowser = wb;
             webBrowser.Url = new Uri(this.Url);
+            webBrowser.ProgressChanged += WebBrowser_ProgressChanged;
 
-            timerCheck = new Timer();
-            timerCheck.Interval = 20000;
-            timerCheck.Tick += TimerCheck_Tick;
-            timerCheck.Enabled = true;
-            timerCheck.Start();
-
-            timer = new Timer();
-            timer.Interval = 1000;
+            timer = new System.Windows.Forms.Timer();
+            timer.Interval = 1200;
             timer.Tick += Timer_Tick;
             timer.Enabled = true;
             timer.Start();
         }
 
-        private void TimerCheck_Tick(object sender, EventArgs e)
+        private void WebBrowser_ProgressChanged(object sender, WebBrowserProgressChangedEventArgs e)
         {
-            timerCheck.Enabled = false;
-            try
-            {
-                DirectoryInfo dir = new DirectoryInfo(string.Concat(Application.StartupPath, "\\", this.Host, "\\"));
-                if (dir.Exists)
-                {
-                    FileInfo[] files = dir.GetFiles();
-                    if (files != null && files.Length > 0)
-                    {
-                        foreach (FileInfo f in files)
-                        {
-                            long seq = data.CheckSeq(Path.GetFileNameWithoutExtension(f.FullName));
-                            if (seq > 0)
-                            {
-                                byte[] filecontent = data.GetFileByte(f.FullName);
-                                if (filecontent != null)
-                                {
-                                    if (data.Execute("UPDATE dbo.Weigh2 SET DocImage = @DocImage WHERE seq = @Id", new SqlParameter[] { new SqlParameter("DocImage", filecontent), new SqlParameter("Id", seq) }))
-                                    {
-                                        Logger.I(string.Concat("Dosya eklendi!", f.FullName, ", Id:", seq));
-                                        try
-                                        {
-                                            File.Delete(f.FullName);
-                                        }
-                                        catch
-                                        {
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Logger.E(string.Concat("Dosya eklenemedi!", f.FullName, ", Id:", seq));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    File.Delete(f.FullName);
-                                }
-                                catch 
-                                {
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                Logger.E(exc);
-            }
-            finally
-            {
-                timerCheck.Enabled = true;
-            }
+
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -121,28 +70,28 @@ namespace DocumentImageCapture
             try
             {
                 timer.Enabled = false;
-
                 if (webBrowser.Document != null)
                 {
                     HtmlElementCollection elements = webBrowser.Document.GetElementsByTagName("img");
                     if (elements != null && elements.Count > 0)
                     {
+                        //Monitor.Enter(lockObject);
                         IHTMLImgElement img = (IHTMLImgElement)elements[0].DomElement;
                         IHTMLElementRenderFixed render = (IHTMLElementRenderFixed)img;
-                        Bitmap bmp = new Bitmap(img.width, img.height);
-                        Graphics g = Graphics.FromImage(bmp);
+                        Bitmap bitmap = new Bitmap(img.width, img.height);
+                        Graphics g = Graphics.FromImage(bitmap);
                         IntPtr hdc = g.GetHdc();
                         render.DrawToDC(hdc);
                         g.ReleaseHdc(hdc);
-                        bmp.Save(string.Concat(Application.StartupPath, "\\", this.Host, "\\", DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss"), ".jpg"),
-                         System.Drawing.Imaging.ImageFormat.Jpeg);
-                        //bmp.Save(Application.StartupPath + "\\" + Guid.NewGuid().ToString("N") + @".jpg",
-                        //     System.Drawing.Imaging.ImageFormat.Jpeg);
-                        webBrowser.Refresh();
-                        Application.DoEvents();
+
+                        //string filename = string.Concat(Application.StartupPath, "\\", this.Host, "\\CaptureImage.jpeg");
+                        //bitmap.Save(filename, ImageFormat.Jpeg);
+
+                        MemoryStream memoryStream = new MemoryStream();
+                        bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        Kamera.CaptureImage = memoryStream.ToArray();
                     }
                 }
-
             }
             catch (Exception exc)
             {
@@ -150,6 +99,8 @@ namespace DocumentImageCapture
             }
             finally
             {
+                //Monitor.Exit(lockObject);
+                webBrowser.Refresh();
                 timer.Enabled = true;
             }
         }
@@ -161,7 +112,7 @@ namespace DocumentImageCapture
 
     }
 
-    [Serializable]
+    [Serializable]//https://picsum.photos/
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://tempuri.org/")]
     public class Kameralar : CollectionBase
     {

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using mshtml;
+using System.Diagnostics;
 
 namespace DocumentImageCapture
 {
@@ -19,6 +20,7 @@ namespace DocumentImageCapture
             InitializeComponent();
         }
 
+        private TcpCaptureServer server = null;
         private Kameralar _kameralar = null;
         public Kameralar Kameralar
         {
@@ -53,14 +55,16 @@ namespace DocumentImageCapture
         {
             try
             {
+                Trace.Listeners.Add(new TextTraceListener(richTrace));
                 timerStartup.Enabled = false;
                 timerStartup.Stop();
                 if (Kameralar.Count > 0)
                 {
                     tabControl1.TabPages.Clear();
-                    for (int i = 0; i < Kameralar.Count; i++)
+                    //for (int i = 0; i < Kameralar.Count; i++)
                     {
-                        if (!Kameralar[i].Aktif) continue;
+                        int i = 0;
+                        if (!Kameralar[i].Aktif) return;
 
                         try
                         {
@@ -81,6 +85,9 @@ namespace DocumentImageCapture
                         page.Tag = Kameralar[i];
                         tabControl1.TabPages.Add(page);
                     }
+
+                    server = new TcpCaptureServer(Kameralar[0].GetSqlConnectionString());
+                    server.Start();
                 }
             }
             catch (Exception exc)
@@ -94,5 +101,9 @@ namespace DocumentImageCapture
             timerStartup.Enabled = true;
         }
 
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Process.GetCurrentProcess().Kill();
+        }
     }
 }

@@ -171,66 +171,6 @@ namespace DocumentImageCapture
             }
         }
 
-        public string ftppass
-        {
-            get
-            {
-                return Decrypt(ReadValue("FTP", "ftppass", Encrypt("")));
-            }
-            set
-            {
-                WriteValue("FTP", "ftppass", Encrypt(value));
-            }
-        }
-
-        public string ftpuser
-        {
-            get
-            {
-                return ReadValue("FTP", "ftpuser", "");
-            }
-            set
-            {
-                WriteValue("FTP", "ftpuser", value);
-            }
-        }
-
-        public string ftphost
-        {
-            get
-            {
-                return ReadValue("FTP", "ftphost", "");
-            }
-            set
-            {
-                WriteValue("FTP", "ftphost", value);
-            }
-        }
-
-        public int ftpport
-        {
-            get
-            {
-                return Convert.ToInt32(ReadValue("FTP", "ftpport", "21"), CultureInfo.CreateSpecificCulture("en-US"));
-            }
-            set
-            {
-                WriteValue("FTP", "ftpport", value.ToString(CultureInfo.CreateSpecificCulture("en-US")));
-            }
-        }
-
-        public bool kopyala
-        {
-            get
-            {
-                return ReadValue("APP", "copy", "0") == "1";
-            }
-            set
-            {
-                WriteValue("APP", "copy", value ? "1" : "0");
-            }
-        }
-
         public static string Encrypt(string clearText)
         {
             try
