@@ -70,7 +70,7 @@ namespace DocumentImageCapture
             try
             {
                 timer.Enabled = false;
-                if (webBrowser.Document != null)
+                if (webBrowser.Document != null && webBrowser.ReadyState == WebBrowserReadyState.Complete)
                 {
                     HtmlElementCollection elements = webBrowser.Document.GetElementsByTagName("img");
                     if (elements != null && elements.Count > 0)
@@ -87,9 +87,15 @@ namespace DocumentImageCapture
                         //string filename = string.Concat(Application.StartupPath, "\\", this.Host, "\\CaptureImage.jpeg");
                         //bitmap.Save(filename, ImageFormat.Jpeg);
 
-                        MemoryStream memoryStream = new MemoryStream();
-                        bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        Kamera.CaptureImage = memoryStream.ToArray();
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            Kamera.CaptureImage = memoryStream.ToArray();
+                            //if (newimage != null && newimage.Length != 83571)
+                            //{
+                            //    Kamera.CaptureImage = newimage;
+                            //}
+                        }
                     }
                 }
             }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
@@ -12,7 +11,7 @@ using System.IO;
 public class TcpCaptureClient
 {
     [Microsoft.SqlServer.Server.SqlProcedure()]
-    public static void CaptureImage(SqlInt32 recId, SqlString desc)
+    public static void CaptureImage(SqlInt64 recId, SqlString description, SqlString hostname, SqlInt32 port)
     {
         try
         {
@@ -20,12 +19,12 @@ public class TcpCaptureClient
             using (TcpClient clientSocket = new TcpClient())
             {
                 #region ReadFromNetwork
-                clientSocket.Connect("127.0.0.1", 8888);
+                clientSocket.Connect(hostname.Value, port.Value);
                 using (NetworkStream serverStream = clientSocket.GetStream())
                 {
                     if (clientSocket != null && serverStream != null && serverStream.CanWrite)
                     {
-                        byte[] outStream = Encoding.GetEncoding("Windows-1254").GetBytes(string.Concat("get-image|", recId, "|", desc));
+                        byte[] outStream = Encoding.GetEncoding("Windows-1254").GetBytes(string.Concat("get-image|", recId.Value, "|", description));
                         serverStream.Write(outStream, 0, outStream.Length);
                         serverStream.Flush();
                         serverStream.Close();

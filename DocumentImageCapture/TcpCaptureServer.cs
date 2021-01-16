@@ -115,10 +115,9 @@ namespace DocumentImageCapture
                                                     {
                                                         conn.Open();
                                                         SqlCommand command = conn.CreateCommand();
-                                                        command.CommandText = "UPDATE dbo.Weigh2 SET DocImage = @DocImage, [Desc] = @Desc WHERE seq = @Id";
-                                                        command.Parameters.AddWithValue("Id", Convert.ToInt32(strarr[1]));
+                                                        command.CommandText = "UPDATE dbo.Weigh2 SET DocImage = @DocImage WHERE seq = @Id";
+                                                        command.Parameters.AddWithValue("Id", Convert.ToInt64(strarr[1]));
                                                         command.Parameters.AddWithValue("DocImage", byteimage);
-                                                        command.Parameters.AddWithValue("Desc", "Ekleme");
                                                         command.ExecuteNonQuery();
                                                         conn.Close();
                                                     }

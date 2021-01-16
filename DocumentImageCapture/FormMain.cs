@@ -86,6 +86,7 @@ namespace DocumentImageCapture
                         tabControl1.TabPages.Add(page);
                     }
 
+                    Logger.I(Kameralar[0].GetSqlConnectionString());
                     server = new TcpCaptureServer(Kameralar[0].GetSqlConnectionString());
                     server.Start();
                 }
@@ -104,6 +105,56 @@ namespace DocumentImageCapture
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             Process.GetCurrentProcess().Kill();
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            if (Kameralar != null && Kameralar.Count > 0)
+            {
+                FormTest test = new FormTest(Kameralar[0].GetSqlConnectionString());
+                test.Show();
+            }
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                this.Size = new Size(800, 600);
+                this.Show();
+                this.notifyIcon1.Visible = false;
+            }
+            catch (Exception exc)
+            {
+                Logger.E(exc);
+            }
+            finally
+            {
+                Application.DoEvents();
+            }
+        }
+
+        private void FormMain_Resize(object sender, EventArgs e)
+        {
+            try
+            {
+                if (WindowState == FormWindowState.Minimized)
+                {
+                    this.Hide();
+                    this.notifyIcon1.Visible = true;
+                    this.notifyIcon1.ShowBalloonTip(600, "Dosya Izleme", "Uygulama çalışıyor.", ToolTipIcon.Info);
+                }
+                else if (WindowState == FormWindowState.Normal)
+                {
+                    this.Show();
+                    this.notifyIcon1.Visible = false;
+                }
+            }
+            catch (Exception exc)
+            {
+                Logger.E(exc);
+            }
+            Application.DoEvents();
         }
     }
 }
