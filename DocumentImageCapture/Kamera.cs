@@ -13,22 +13,27 @@ using System.Collections;
 using mshtml;
 using System.Threading;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace DocumentImageCapture
 {
     [Serializable]
+    [DebuggerDisplay("Url = {Url}, Aktif = {Aktif}")]
     public class Kamera
     {
         [NonSerialized]
         private System.Windows.Forms.Timer timer, timerCheck;
+
         [NonSerialized]
         private DataProvider data;
-        [NonSerialized]
-        private WebBrowser webBrowser;
-        public const string SELECT_STRING = "SELECT TOP 1 seq FROM dbo.Weigh2 WITH (NOLOCK) WHERE WeighTime1 = '{0}'";
 
-        private volatile static byte[] captureImage = null;
-        public /*volatile*/ static byte[] CaptureImage
+        [NonSerialized]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private WebBrowser webBrowser;
+
+        private volatile byte[] captureImage = null;
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public /*volatile*/ byte[] CaptureImage
         {
             get { return captureImage; }
             set { captureImage = value; }
@@ -37,17 +42,12 @@ namespace DocumentImageCapture
         public Kamera() { }
 
         public string Url { get; set; }
-        public string Host { get; set; }
-        public string Database { get; set; }
-        public string User { get; set; }
-        public string Password { get; set; }
         public bool Aktif { get; set; }
 
         public void Start(WebBrowser wb)
         {
             data = new DataProvider();
-            data.ConnectionString = GetSqlConnectionString();
-            data.CheckField();
+            data.ConnectionString = AppSettingHelper.Default.GetSqlConnectionString();
 
             webBrowser = wb;
             webBrowser.Url = new Uri(this.Url);
@@ -70,13 +70,13 @@ namespace DocumentImageCapture
             try
             {
                 timer.Enabled = false;
-                if (webBrowser.Document != null && webBrowser.ReadyState == WebBrowserReadyState.Complete)
+                if (webBrowser.Document != null && (webBrowser.ReadyState == WebBrowserReadyState.Complete || webBrowser.ReadyState == WebBrowserReadyState.Interactive))
                 {
                     HtmlElementCollection elements = webBrowser.Document.GetElementsByTagName("img");
                     if (elements != null && elements.Count > 0)
                     {
                         //Monitor.Enter(lockObject);
-                        IHTMLImgElement img = (IHTMLImgElement)elements[0].DomElement;
+                        IHTMLImgElement img = (IHTMLImgElement)elements[1].DomElement;
                         IHTMLElementRenderFixed render = (IHTMLElementRenderFixed)img;
                         Bitmap bitmap = new Bitmap(img.width, img.height);
                         Graphics g = Graphics.FromImage(bitmap);
@@ -90,7 +90,7 @@ namespace DocumentImageCapture
                         using (MemoryStream memoryStream = new MemoryStream())
                         {
                             bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                            Kamera.CaptureImage = memoryStream.ToArray();
+                            this.CaptureImage = memoryStream.ToArray();
                             //if (newimage != null && newimage.Length != 83571)
                             //{
                             //    Kamera.CaptureImage = newimage;
@@ -109,11 +109,6 @@ namespace DocumentImageCapture
                 webBrowser.Refresh();
                 timer.Enabled = true;
             }
-        }
-
-        public string GetSqlConnectionString()
-        {
-            return string.Format("data source={0};persist security info=False;initial catalog={1};Connect Timeout=50;User={2};Password={3};", this.Host, this.Database, this.User, AppSettingHelper.Decrypt(this.Password));
         }
 
     }

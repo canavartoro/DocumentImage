@@ -55,39 +55,38 @@ namespace DocumentImageCapture
         {
             try
             {
-                Trace.Listeners.Add(new TextTraceListener(richTrace));
                 timerStartup.Enabled = false;
-                timerStartup.Stop();
+                DataProvider data = new DataProvider();
+                data.ConnectionString = AppSettingHelper.Default.GetSqlConnectionString();
+                data.RemoveField();
+                data.CheckTable();
+
                 if (Kameralar.Count > 0)
                 {
-                    tabControl1.TabPages.Clear();
-                    //for (int i = 0; i < Kameralar.Count; i++)
+                    int locationX = 8, locationY = 6;
+
+                    for (int i = 0; i < Kameralar.Count; i++)
                     {
-                        int i = 0;
-                        if (!Kameralar[i].Aktif) return;
+                        if (!Kameralar[i].Aktif) continue;
 
-                        try
-                        {
-                            if (!Directory.Exists(string.Concat(Application.StartupPath, "\\", Kameralar[i].Host)))
-                                Directory.CreateDirectory(string.Concat(Application.StartupPath, "\\", Kameralar[i].Host));
-                        }
-                        catch (Exception exc)
-                        {
-                            Utility.Hata(exc);
-                        }
-
-                        TabPage page = new TabPage();
-                        page.Text = Kameralar[i].Host;
                         WebBrowser wbrowser = new WebBrowser();
-                        wbrowser.Dock = DockStyle.Fill;
+                        wbrowser.Location = new Point(locationX, locationY);
+                        wbrowser.Size = new Size(300, 220);
                         Kameralar[i].Start(wbrowser);
-                        page.Controls.Add(wbrowser);
-                        page.Tag = Kameralar[i];
-                        tabControl1.TabPages.Add(page);
+                        panelKamera.Controls.Add(wbrowser);
+                        Application.DoEvents();
+                        if (locationX + 308 > panelKamera.Width)
+                        {
+                            locationX = 8;
+                            locationY += 226;
+                        }
+                        else
+                        {
+                            locationX += 308;
+                        }
                     }
 
-                    Logger.I(Kameralar[0].GetSqlConnectionString());
-                    server = new TcpCaptureServer(Kameralar[0].GetSqlConnectionString());
+                    server = new TcpCaptureServer(Kameralar);
                     server.Start();
                 }
             }
@@ -99,6 +98,7 @@ namespace DocumentImageCapture
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            Trace.Listeners.Add(new TextTraceListener(richTrace));
             timerStartup.Enabled = true;
         }
 
@@ -111,7 +111,7 @@ namespace DocumentImageCapture
         {
             if (Kameralar != null && Kameralar.Count > 0)
             {
-                FormTest test = new FormTest(Kameralar[0].GetSqlConnectionString());
+                FormTest test = new FormTest();
                 test.Show();
             }
         }

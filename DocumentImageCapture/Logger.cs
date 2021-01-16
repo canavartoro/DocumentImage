@@ -29,7 +29,7 @@ namespace DocumentImageCapture
         #region Verbose
         public static void V(Exception exception, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 4)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 4)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Verbose :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Exception: ", exception.Message, ", StackTrace:", exception.StackTrace));
             }
@@ -37,7 +37,7 @@ namespace DocumentImageCapture
 
         public static void V(string str, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 4)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 4)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Verbose :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Mesaj: ", str));
             }
@@ -45,7 +45,7 @@ namespace DocumentImageCapture
 
         public static void V(object obj, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 4)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 4)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Verbose :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Object: ", obj != null ? obj.ToString() : "null"));
             }
@@ -55,7 +55,7 @@ namespace DocumentImageCapture
         #region Info
         public static void I(Exception exception, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 3)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 3)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Info :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Exception: ", exception.Message, ", StackTrace:", exception.StackTrace));
             }
@@ -63,7 +63,7 @@ namespace DocumentImageCapture
 
         public static void I(string str, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 3)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 3)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Info :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Mesaj: ", str));
             }
@@ -71,7 +71,7 @@ namespace DocumentImageCapture
 
         public static void I(object obj, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 3)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 3)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Info :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Object: ", obj != null ? obj.ToString() : "null"));
             }
@@ -81,7 +81,7 @@ namespace DocumentImageCapture
         #region Warning
         public static void W(Exception exception, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 2)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 2)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Warning :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Exception: ", exception.Message, ", StackTrace:", exception.StackTrace));
             }
@@ -89,7 +89,7 @@ namespace DocumentImageCapture
 
         public static void W(string str, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 2)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 2)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Warning :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Mesaj: ", str));
             }
@@ -97,7 +97,7 @@ namespace DocumentImageCapture
 
         public static void W(object obj, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 2)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 2)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Warning :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Object: ", obj != null ? obj.ToString() : "null"));
             }
@@ -107,7 +107,7 @@ namespace DocumentImageCapture
         #region Error
         public static void E(Exception exception, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 1)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 1)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Error :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Exception: ", exception.Message, ", StackTrace:", exception.StackTrace));
             }
@@ -115,7 +115,7 @@ namespace DocumentImageCapture
 
         public static void E(string str, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 1)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 1)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Error :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Mesaj: ", str));
             }
@@ -123,7 +123,7 @@ namespace DocumentImageCapture
 
         public static void E(object obj, [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (AppSettingHelper.Default.tracelavel.GetHashCode() >= 1)
+            if (AppSettingHelper.Default.TraceLavel.GetHashCode() >= 1)
             {
                 System.Diagnostics.Trace.WriteLine(string.Concat("Error :: ", DateTime.Now.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber, ", Object: ", obj != null ? obj.ToString() : "null"));
             }

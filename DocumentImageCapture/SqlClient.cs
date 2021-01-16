@@ -4,6 +4,8 @@ using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace DocumentImageCapture
 {
@@ -67,8 +69,15 @@ namespace DocumentImageCapture
 
                 return connection != null && connection.State == System.Data.ConnectionState.Open;
             }
+            catch (SqlException sqlexception)
+            {
+                Logger.E(sqlexception);
+                message = sqlexception.Message;
+                return false;
+            }
             catch (Exception exception)
             {
+                Logger.E(exception);
                 message = exception.Message;
                 return false;
             }
@@ -93,8 +102,14 @@ namespace DocumentImageCapture
                     connection.Dispose();
                 }
             }
+            catch (SqlException sqlexception)
+            {
+                Logger.E(sqlexception);
+                message = sqlexception.Message;
+            }
             catch (Exception exception)
             {
+                Logger.E(exception);
                 message = exception.Message;
             }
         }
@@ -108,7 +123,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return null;
 
                 command.CommandText = sqlString;
 
@@ -121,6 +136,11 @@ namespace DocumentImageCapture
                 SqlStringLog();
 
                 return command.ExecuteReader();
+            }
+            catch (SqlException sqlexception)
+            {
+                Logger.E(sqlexception);
+                message = sqlexception.Message;
             }
             catch (Exception exc)
             {
@@ -146,7 +166,7 @@ namespace DocumentImageCapture
             try
             {
 
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return null;
 
                 command.CommandText = sqlString;
 
@@ -176,6 +196,11 @@ namespace DocumentImageCapture
                     }
                 }
             }
+            catch (SqlException sqlexception)
+            {
+                Logger.E(sqlexception);
+                message = sqlexception.Message;
+            }
             catch (Exception exc)
             {
                 message = exc.Message;
@@ -197,7 +222,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return null;
 
                 command.CommandText = sqlString;
                 if (parameters != null)
@@ -212,6 +237,11 @@ namespace DocumentImageCapture
                 DataTable table = new DataTable();
                 adapter.Fill(table);
                 return table;
+            }
+            catch (SqlException sqlexception)
+            {
+                Logger.E(sqlexception);
+                message = sqlexception.Message;
             }
             catch (Exception exc)
             {
@@ -245,7 +275,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return false;
 
                 command.CommandText = sqlString;
                 if (parameters != null)
@@ -256,6 +286,11 @@ namespace DocumentImageCapture
 
                 SqlStringLog();
                 return command.ExecuteNonQuery() > 0;
+            }
+            catch (SqlException sqlexception)
+            {
+                Logger.E(sqlexception);
+                message = sqlexception.Message;
             }
             catch (Exception exc)
             {
@@ -289,7 +324,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return null;
 
                 command.Parameters.Clear();
                 command.CommandText = sqlString;
@@ -301,6 +336,11 @@ namespace DocumentImageCapture
 
                 SqlStringLog();
                 return command.ExecuteScalar();
+            }
+            catch (SqlException sqlexception)
+            {
+                Logger.E(sqlexception);
+                message = sqlexception.Message;
             }
             catch (Exception exc)
             {
@@ -339,7 +379,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return;
 
                 command.Transaction = connection.BeginTransaction();
             }
@@ -403,7 +443,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return;
 
                 command.Parameters.AddWithValue(name, val);
             }
@@ -422,7 +462,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return;
 
                 command.Parameters.Add(new SqlParameter() { ParameterName = name, DbType = dbType, Direction = direction });
 
@@ -442,7 +482,7 @@ namespace DocumentImageCapture
         {
             try
             {
-                if (!IsConnected) Connect();
+                if (!IsConnected && !Connect()) return;
 
                 command.Parameters.Clear();
             }
@@ -464,7 +504,8 @@ namespace DocumentImageCapture
             return sql != null && sql.IsConnected;
         }
 
-        private void SqlStringLog()
+        [DebuggerStepThrough()]
+        private void SqlStringLog([CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
             if (command != null)
             {
@@ -472,11 +513,11 @@ namespace DocumentImageCapture
                 {
                     StringBuilder sb = new StringBuilder();
                     foreach (IDataParameter prm in command.Parameters) sb.AppendFormat("\tName:{0},Value:{1}\t", prm.ParameterName, prm.Value);
-                    Logger.I(string.Concat("Command:", command.CommandText, "\tParameters:", sb.ToString()));
+                    Logger.I(string.Concat("Command:", command.CommandText, "\tParameters:", sb.ToString(), ", Caller: ", callerName, ", lineNumber : ", lineNumber));
                 }
                 else
                 {
-                    Logger.I(string.Concat("Command:", command.CommandText));
+                    Logger.I(string.Concat("Command:", command.CommandText, ", Caller: ", callerName, ", lineNumber : ", lineNumber));
 
                 }
             }

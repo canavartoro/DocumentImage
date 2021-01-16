@@ -45,6 +45,8 @@ sp_CaptureImage 3, N'Deneme'
 
 ALTER DATABASE ors_test SET TRUSTWORTHY ON
 
+EXEC sp_changedbowner  N'sa'
+
 GO
 ALTER DATABASE [ors_test] SET TRUSTWORTHY ON WITH ROLLBACK IMMEDIATE
 GO

@@ -189,22 +189,35 @@ namespace DocumentImageCapture
             return fileByes;
         }
 
-        public long CheckSeq(string date)
-        {
-            string[] dates = date.Split('_');
-            object seqobj = ExecuteScalar(string.Format(Kamera.SELECT_STRING, string.Concat(dates[0], "-", dates[1], "-", dates[2], " ", dates[3], ":", dates[4])));
-            if (seqobj != null)
-            {
-                return Convert.ToInt64(seqobj);
-            }
-            return 0;
-        }
-
         public void CheckField()
         {
             try
             {
                 Execute("IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WITH (NOLOCK) WHERE TABLE_NAME = N'Weigh2' AND COLUMN_NAME = N'DocImage') BEGIN ALTER TABLE dbo.Weigh2 ADD DocImage IMAGE NULL END");
+            }
+            catch (Exception exc)
+            {
+                Logger.E(exc);
+            }
+        }
+
+        public void RemoveField()
+        {
+            try
+            {
+                Execute("IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WITH (NOLOCK) WHERE TABLE_NAME = N'Weigh2' AND COLUMN_NAME = N'DocImage') BEGIN ALTER TABLE dbo.Weigh2 DROP DocImage END");
+            }
+            catch (Exception exc)
+            {
+                Logger.E(exc);
+            }
+        }
+
+        public void CheckTable()
+        {
+            try
+            {
+                Execute("IF OBJECT_ID('Weigh_Image') IS NULL BEGIN CREATE TABLE [dbo].[Weigh_Image]([Id] [BIGINT] PRIMARY KEY IDENTITY(1,1) NOT NULL,[WaybillId] [BIGINT] NULL,[DocImage] [IMAGE] NOT NULL,[Description] [NVARCHAR](200) DEFAULT ('') NULL,[CreateDate] [DATETIME] DEFAULT (GETDATE()) NULL) END");
             }
             catch (Exception exc)
             {

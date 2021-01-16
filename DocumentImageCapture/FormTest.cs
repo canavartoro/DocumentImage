@@ -19,14 +19,6 @@ namespace DocumentImageCapture
             InitializeComponent();
         }
 
-        public FormTest(string conntr)
-        {
-            InitializeComponent();
-            connectionstring = conntr;
-        }
-
-        private string connectionstring = "data source=127.0.0.1;persist security info=False;initial catalog=ors_test;Connect Timeout=50;User=sa;Password=20012001;";
-
         private void button1_Click(object sender, EventArgs e)
         {
             try
@@ -39,7 +31,7 @@ namespace DocumentImageCapture
                 }
 
                 //using (SqlConnection conn = new SqlConnection("data source=127.0.0.1;persist security info=False;initial catalog=ors_test;Connect Timeout=50;User=sa;Password=20012001;"))
-                using (SqlConnection conn = new SqlConnection(connectionstring))
+                using (SqlConnection conn = new SqlConnection(AppSettingHelper.Default.GetSqlConnectionString()))
                 {
                     SqlCommand comm = conn.CreateCommand();
                     comm.CommandText = string.Concat("SELECT DocImage FROM dbo.Weigh2 WITH(NOLOCK) WHERE seq = ", Convert.ToInt32(toolStripTextBox1.Text));
@@ -86,7 +78,7 @@ namespace DocumentImageCapture
             {
                 pictureBox1.Image = Image.FromFile(op.FileName);
                 //using (SqlConnection conn = new SqlConnection("data source=127.0.0.1;persist security info=False;initial catalog=ors_test;Connect Timeout=50;User=sa;Password=20012001;"))
-                using (SqlConnection conn = new SqlConnection(connectionstring))
+                using (SqlConnection conn = new SqlConnection(AppSettingHelper.Default.GetSqlConnectionString()))
                 {
                     MemoryStream memoryStream = new MemoryStream();
                     pictureBox1.Image.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);

@@ -28,30 +28,16 @@ namespace DocumentImageCapture
             StringBuilder str = new StringBuilder();
             errorProvider1.Clear();
 
-            if (string.IsNullOrWhiteSpace(txtHedefKlasor.Text))
+            if (string.IsNullOrWhiteSpace(textServ.Text))
             {
-                errorProvider1.SetError(txtHedefKlasor, "Hedef klasör adı boş bırakılamaz!");
-                str.AppendLine("Hedef klasör adı boş bırakılamaz!");
-            }
-            else
-            {
-                if (!Directory.Exists(txtHedefKlasor.Text))
-                {
-                    errorProvider1.SetError(txtHedefKlasor, "Hedef klasör adı hatalı!");
-                    str.AppendLine("Hedef klasör adı hatalı!");
-                }
+                errorProvider1.SetError(textServ, "Sql Server Host/IP boş olamaz!");
+                str.AppendLine("Sql Server Host/IP boş olamaz!");
             }
 
-            if (string.IsNullOrWhiteSpace(txtHost.Text))
+            if (string.IsNullOrWhiteSpace(textDb.Text))
             {
-                errorProvider1.SetError(txtHost, "Oracle Host/IP boş olamaz!");
-                str.AppendLine("Oracle Host/IP boş olamaz!");
-            }
-
-            if (string.IsNullOrWhiteSpace(txtServis.Text))
-            {
-                errorProvider1.SetError(txtHost, "Oracle Servis adı boş olamaz!");
-                str.AppendLine("Oracle Servis adı boş olamaz!");
+                errorProvider1.SetError(textServ, "Sql Server db adı boş olamaz!");
+                str.AppendLine("Sql Server db adı boş olamaz!");
             }
 
             return str.ToString();
@@ -80,22 +66,17 @@ namespace DocumentImageCapture
 
             TraceLevel trace = TraceLevel.Off;
             Enum.TryParse<TraceLevel>(cmdtracelavel.Text, out trace);
-            AppSettingHelper.Default.tracelavel = trace;
-
-            AppSettingHelper.Default.orahost = txtHost.Text;
-            AppSettingHelper.Default.oraservis = txtServis.Text;
-            AppSettingHelper.Default.hedefklasor = txtHedefKlasor.Text;
-            AppSettingHelper.Default.timeout = (int)nmTimeout.Value;
-            AppSettingHelper.Default.userid = (int)nmuserid.Value;
-            AppSettingHelper.Default.oraport = (int)nmoraport.Value;
-            AppSettingHelper.Default.coid = (int)nmcoid.Value;
-            AppSettingHelper.Default.branchid = (int)nmbranchid.Value;
+            AppSettingHelper.Default.TraceLavel = trace;
+            AppSettingHelper.Default.SqlServer = textServ.Text;
+            AppSettingHelper.Default.Database = textDb.Text;
+            AppSettingHelper.Default.DbUser = textUser.Text;
+            AppSettingHelper.Default.DbPassword = textPassw.Text;
+            AppSettingHelper.Default.TimeOut = (int)nmTimeout.Value;
 
             //Properties.Settings.Default.Save();
             //Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             //string path = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
             Utility.Bilgi("Ayarlar config.dat dosyasına kaydedildi");
-
 
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
         }
@@ -107,27 +88,13 @@ namespace DocumentImageCapture
 
             string[] names = Enum.GetNames(typeof(TraceLevel));
             cmdtracelavel.Items.AddRange(names);
-            cmdtracelavel.Text = AppSettingHelper.Default.tracelavel.ToString();
+            cmdtracelavel.Text = AppSettingHelper.Default.TraceLavel.ToString();
 
-            txtHost.Text = AppSettingHelper.Default.orahost;
-            txtServis.Text = AppSettingHelper.Default.oraservis;
-            txtHedefKlasor.Text = AppSettingHelper.Default.hedefklasor;
-            nmTimeout.Value = AppSettingHelper.Default.timeout;
-            nmuserid.Value = AppSettingHelper.Default.userid;
-            nmoraport.Value = AppSettingHelper.Default.oraport;
-            nmbranchid.Value = AppSettingHelper.Default.branchid;
-            nmcoid.Value = AppSettingHelper.Default.coid;
-        }
-
-        private void btnHedefFold_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog fl = new FolderBrowserDialog();
-            fl.Description = "Dosyaların kopyalanacağı klasörü seçin.";
-            fl.ShowNewFolderButton = false;
-            if (fl.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                txtHedefKlasor.Text = fl.SelectedPath;
-            }
+            textServ.Text = AppSettingHelper.Default.SqlServer;
+            textDb.Text = AppSettingHelper.Default.Database;
+            textUser.Text = AppSettingHelper.Default.DbUser;
+            textPassw.Text = AppSettingHelper.Default.DbPassword;
+            nmTimeout.Value = AppSettingHelper.Default.TimeOut;
         }
 
         private int selectIndex = -1;
@@ -145,19 +112,11 @@ namespace DocumentImageCapture
         {
             if (selectIndex != -1)
             {
-                textKHost.Text = Kameralar[selectIndex].Host;
-                textKDb.Text = Kameralar[selectIndex].Database;
-                textKUser.Text = Kameralar[selectIndex].User;
-                textKPass.Text = AppSettingHelper.Decrypt(Kameralar[selectIndex].Password);
                 textKUrl.Text = Kameralar[selectIndex].Url;
                 checkKAktif.Checked = Kameralar[selectIndex].Aktif;
             }
             else
             {
-                textKHost.Text = "";
-                textKDb.Text = "";
-                textKUser.Text = "";
-                textKPass.Text = "";
                 textKUrl.Text = "";
                 checkKAktif.Checked = false;
             }
@@ -178,9 +137,8 @@ namespace DocumentImageCapture
                     {
                         ListViewItem itm = new ListViewItem();
                         itm.Text = i.ToString();
-                        itm.SubItems.Add(kmr.Host);
                         itm.SubItems.Add(kmr.Url);
-                        itm.SubItems.Add(kmr.Aktif ? "Ö" : "");
+                        itm.SubItems.Add(kmr.Aktif ? "√" : "");
                         listKamera.Items.Add(itm);
                     }
                 }
@@ -215,21 +173,13 @@ namespace DocumentImageCapture
             {
                 Kamera selectKam = new Kamera();
                 selectKam.Aktif = checkKAktif.Checked;
-                selectKam.Database = textKDb.Text;
-                selectKam.User = textKUser.Text;
-                selectKam.Password = AppSettingHelper.Encrypt(textKPass.Text);
                 selectKam.Url = textKUrl.Text;
-                selectKam.Host = textKHost.Text;
                 Kameralar.Add(selectKam);
             }
             else
             {
                 Kameralar[selectIndex].Aktif = checkKAktif.Checked;
-                Kameralar[selectIndex].Database = textKDb.Text;
-                Kameralar[selectIndex].User = textKUser.Text;
-                Kameralar[selectIndex].Password = AppSettingHelper.Encrypt(textKPass.Text);
                 Kameralar[selectIndex].Url = textKUrl.Text;
-                Kameralar[selectIndex].Host = textKHost.Text;
             }
 
             selectIndex = -1;

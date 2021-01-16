@@ -22,16 +22,16 @@ namespace DocumentImageCapture
             }
         }
 
-
-        public static string GetConnectionString()
+        public string GetSqlConnectionString()
         {
-            return string.Format("Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={0})(PORT={1})))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={2})));User Id=uyumsoft;Password=uyumsoft;", AppSettingHelper.Default.orahost, AppSettingHelper.Default.oraport, AppSettingHelper.Default.oraservis);
+            return string.Format("data source={0};persist security info=False;initial catalog={1};Connect Timeout=50;User={2};Password={3};", this.SqlServer, this.Database, this.DbUser, this.DbPassword);
         }
 
         const string SETTING_FILE_NAME = "config.dat";
 
         [DllImport("kernel32")]
         private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+
         [DllImport("kernel32")]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
 
@@ -61,113 +61,77 @@ namespace DocumentImageCapture
 
         }
 
-        public string orahost
+        public string SqlServer
         {
             get
             {
-                return ReadValue("DATA", "orahost", "");
+                return ReadValue("DATA", "SQL-SERVER", "");
             }
             set
             {
-                WriteValue("DATA", "orahost", value);
+                WriteValue("DATA", "SQL-SERVER", value);
             }
         }
 
-        public string oraservis
+        public string Database
         {
             get
             {
-                return ReadValue("DATA", "oraservis", "");
+                return ReadValue("DATA", "SQL-DB", "");
             }
             set
             {
-                WriteValue("DATA", "oraservis", value);
+                WriteValue("DATA", "SQL-DB", value);
             }
         }
 
-        public int oraport
+        public string DbUser
         {
             get
             {
-                return Convert.ToInt32(ReadValue("DATA", "oraport", "1521"), CultureInfo.CreateSpecificCulture("en-US"));
+                return ReadValue("DATA", "SQL-USER", "");
             }
             set
             {
-                WriteValue("DATA", "oraport", value.ToString(CultureInfo.CreateSpecificCulture("en-US")));
+                WriteValue("DATA", "SQL-USER", value);
             }
         }
 
-        public string hedefklasor
+        public string DbPassword
         {
             get
             {
-                return ReadValue("PATH", "hedefklasor", "C:\\temp");
+                return Decrypt(ReadValue("DATA", "SQL-PASSWORD", ""));
             }
             set
             {
-                WriteValue("PATH", "hedefklasor", value);
+                WriteValue("DATA", "SQL-PASSWORD", Encrypt(value));
             }
         }
 
-        public int branchid
+        public int TimeOut
         {
             get
             {
-                return Convert.ToInt32(ReadValue("DATA", "branchid", "0"), CultureInfo.CreateSpecificCulture("en-US"));
+                return Convert.ToInt32(ReadValue("APP", "TIMEOUT", "10"), CultureInfo.CreateSpecificCulture("en-US"));
             }
             set
             {
-                WriteValue("DATA", "branchid", value.ToString(CultureInfo.CreateSpecificCulture("en-US")));
+                WriteValue("APP", "TIMEOUT", value.ToString(CultureInfo.CreateSpecificCulture("en-US")));
             }
         }
 
-        public int coid
-        {
-            get
-            {
-                return Convert.ToInt32(ReadValue("DATA", "coid", "0"), CultureInfo.CreateSpecificCulture("en-US"));
-            }
-            set
-            {
-                WriteValue("DATA", "coid", value.ToString(CultureInfo.CreateSpecificCulture("en-US")));
-            }
-        }
-
-        public int userid
-        {
-            get
-            {
-                return Convert.ToInt32(ReadValue("DATA", "userid", "0"), CultureInfo.CreateSpecificCulture("en-US"));
-            }
-            set
-            {
-                WriteValue("DATA", "userid", value.ToString(CultureInfo.CreateSpecificCulture("en-US")));
-            }
-        }
-
-        public int timeout
-        {
-            get
-            {
-                return Convert.ToInt32(ReadValue("APP", "timeout", "10"), CultureInfo.CreateSpecificCulture("en-US"));
-            }
-            set
-            {
-                WriteValue("APP", "timeout", value.ToString(CultureInfo.CreateSpecificCulture("en-US")));
-            }
-        }
-
-        public global::System.Diagnostics.TraceLevel tracelavel
+        public global::System.Diagnostics.TraceLevel TraceLavel
         {
             get
             {
                 global::System.Diagnostics.TraceLevel level = System.Diagnostics.TraceLevel.Verbose;
-                Enum.TryParse<System.Diagnostics.TraceLevel>(ReadValue("APP", "tracelavel", global::System.Diagnostics.TraceLevel.Verbose.ToString()), out level);
+                Enum.TryParse<System.Diagnostics.TraceLevel>(ReadValue("APP", "TRACELAVEL", global::System.Diagnostics.TraceLevel.Verbose.ToString()), out level);
                 return level;
             }
             set
             {
-                WriteValue("APP", "tracelavel", value.ToString());
+                WriteValue("APP", "TRACELAVEL", value.ToString());
             }
         }
 
@@ -201,11 +165,12 @@ namespace DocumentImageCapture
                 }
                 return clearText;
             }
-            catch 
+            catch
             {
             }
             return "";
         }
+
         public static string Decrypt(string cipherText)
         {
             try
@@ -237,7 +202,7 @@ namespace DocumentImageCapture
                 }
                 return cipherText;
             }
-            catch 
+            catch
             {
             }
             return "";

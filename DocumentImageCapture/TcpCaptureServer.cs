@@ -21,11 +21,11 @@ namespace DocumentImageCapture
         bool abortListener = false;
         TcpListener server = null;
         Thread threadlisten = null;
-        private string sqlconnectionstring = "data source=127.0.0.1;persist security info=False;initial catalog=ors_test;Connect Timeout=50;User=sa;Password=20012001;";
+        Kameralar _kameralar = null;
 
-        public TcpCaptureServer(string sqlconnstr)
+        public TcpCaptureServer(Kameralar kams)
         {
-            sqlconnectionstring = sqlconnstr;
+            _kameralar = kams;
         }
 
         public void Start()
@@ -105,20 +105,26 @@ namespace DocumentImageCapture
                                     {
                                         if (stream.CanWrite)
                                         {
-                                            if (Kamera.CaptureImage != null)
+                                            if (_kameralar != null && _kameralar.Count > 0)
                                             {
-                                                byte[] byteimage = Kamera.CaptureImage.ToArray();
-
                                                 try
                                                 {
-                                                    using (SqlConnection conn = new SqlConnection(sqlconnectionstring))
+                                                    using (SqlConnection conn = new SqlConnection(AppSettingHelper.Default.GetSqlConnectionString()))
                                                     {
                                                         conn.Open();
                                                         SqlCommand command = conn.CreateCommand();
-                                                        command.CommandText = "UPDATE dbo.Weigh2 SET DocImage = @DocImage WHERE seq = @Id";
-                                                        command.Parameters.AddWithValue("Id", Convert.ToInt64(strarr[1]));
-                                                        command.Parameters.AddWithValue("DocImage", byteimage);
-                                                        command.ExecuteNonQuery();
+                                                        command.CommandText = "INSERT INTO [dbo].[Weigh_Image] (WaybillId,DocImage) VALUES (@Waybill,@DocImage)";
+                                                        for (int loop = 0; loop < _kameralar.Count; loop++)
+                                                        {
+                                                            if (_kameralar[loop].CaptureImage != null)
+                                                            {
+                                                                command.Parameters.Clear();
+                                                                byte[] byteimage = _kameralar[loop].CaptureImage.ToArray(); //Kamera.CaptureImage.ToArray();
+                                                                command.Parameters.AddWithValue("Waybill", Convert.ToInt64(strarr[1]));
+                                                                command.Parameters.AddWithValue("DocImage", byteimage);
+                                                                command.ExecuteNonQuery();
+                                                            }
+                                                        }
                                                         conn.Close();
                                                     }
                                                 }
@@ -134,7 +140,8 @@ namespace DocumentImageCapture
                                                 {
                                                     SqlConnection.ClearAllPools();
                                                 }
-                                                stream.Write(byteimage, 0, byteimage.Length);
+                                                byte[] nullbyt = new byte[512];
+                                                stream.Write(nullbyt, 0, nullbyt.Length);
                                                 stream.Flush();
                                                 stream.Close();
                                             }

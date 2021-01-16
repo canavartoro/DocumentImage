@@ -1,6 +1,6 @@
 [APP]
 tracelavel=Verbose
-timeout=10
+timeout=1
 copy=0
 [DATA]
 orahost=
@@ -9,6 +9,10 @@ userid=0
 oraport=1521
 branchid=0
 coid=0
+SQL-SERVER=127.0.0.1
+SQL-DB=KantarDB
+SQL-USER=sa
+SQL-PASSWORD=2vIU+b38nNpEjcano+w7C5dViBF8pY3QhvYYAuNom8c=
 [PATH]
 hedefklasor=C:\temp
 [FTP]
