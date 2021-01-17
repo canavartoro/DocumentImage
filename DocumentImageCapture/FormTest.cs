@@ -84,7 +84,7 @@ namespace DocumentImageCapture
                                     }
 
                                     #region Text
-
+                                    /*
                                     Font font = new Font("Tahoma", 14, FontStyle.Bold, GraphicsUnit.Pixel);
                                     Point atpoint = new Point(bitmap.Width / 2, bitmap.Height / 2);
                                     SolidBrush brush = new SolidBrush(Color.DeepSkyBlue);//new SolidBrush(Color.FromArgb(255, 255, 0, 0));
@@ -101,18 +101,19 @@ namespace DocumentImageCapture
                                     //Image logo = Image.FromFile(@"C:\Users\huseyin.celik\Downloads\hc.png");
                                     //graphics.DrawImage(logo, bitmap.Width - 50, 0, 50, 50);
 
-                                    RectangleF rectF1 = new RectangleF(10, 8, 100, 30);
-                                    graphics.DrawRectangle(Pens.DeepSkyBlue, Rectangle.Round(rectF1));
-                                    graphics.DrawString("Canavar.Toro", font, brush, new Point(12, 12));
+                                    //RectangleF rectF1 = new RectangleF(10, 8, 100, 30);
+                                    //graphics.DrawRectangle(Pens.DeepSkyBlue, Rectangle.Round(rectF1));
+                                    //graphics.DrawString("Canavar.Toro", font, brush, new Point(12, 12));
 
                                     graphics.Flush();
                                     graphics.Dispose();
                                     MemoryStream m = new MemoryStream();
                                     bitmap.Save(m, System.Drawing.Imaging.ImageFormat.Jpeg);
                                     pcb.Image = bitmap;
-                                    //bitmap.Save(string.Concat(Application.StartupPath, "\\tom.jpg"));
+                                    //bitmap.Save(string.Concat(Application.StartupPath, "\\tom.jpg"));*/
                                     #endregion
 
+                                    pcb.Image = bitmap;
                                     TabPage tp = new TabPage();
                                     tp.Text = string.Concat(dt.Rows[i]["CreateDate"].ToString(), " ", dt.Rows[i]["Description"].ToString(), " ", FileSizeString(imagebytes.Length));
                                     tp.Controls.Add(pcb);
@@ -165,15 +166,22 @@ namespace DocumentImageCapture
                     DataTable dt = new DataTable();
                     da.Fill(dt);
 
-                    string weightText = string.Concat("Material:", dt.Rows[0]["MaterialName"].GetString(), " Weight1:", dt.Rows[0]["Weight1"].GetDecimal().ToString("N"),
-                        "	Weight2:", dt.Rows[0]["Weight2"].GetDecimal().ToString("N"), "	Net:", dt.Rows[0]["Net"].GetDecimal().ToString("N"));
+                    string materialText = string.Concat("Material:", dt.Rows[0]["MaterialName"].GetString());
+
+                    string weightText = string.Concat("Weight1:", dt.Rows[0]["Weight1"].GetDecimal().ToString("N"));
+
+                    string weight2Text = string.Concat("Weight2:", dt.Rows[0]["Weight2"].GetDecimal().ToString("N"));
+
+                    string netText = string.Concat("Net:", dt.Rows[0]["Net"].GetDecimal().ToString("N"));
+
                     string firmText = string.Concat("Firm Name:", dt.Rows[0]["FirmName"].GetString());
-                    string plateText = string.Concat("Plate:", dt.Rows[0]["Plate"].GetString(), "    Waybill No:", dt.Rows[0]["WaybillNo"].GetString());
+                    string plateText = string.Concat("Plate:", dt.Rows[0]["Plate"].GetString());
+                    string waybillText = string.Concat("Waybill No:", dt.Rows[0]["WaybillNo"].GetString());
 
                     Image bitmap = Image.FromFile(op.FileName);
                     #region Text
 
-                    Font font = new Font("Tahoma", 34, FontStyle.Bold, GraphicsUnit.Pixel);
+                    Font font = new Font("Tahoma", 44, FontStyle.Bold, GraphicsUnit.Pixel);
                     Point atpoint = new Point(bitmap.Width / 2, bitmap.Height / 2);
                     SolidBrush brush = new SolidBrush(Color.White);//new SolidBrush(Color.FromArgb(255, 255, 0, 0));
                     Graphics graphics = Graphics.FromImage(bitmap);
@@ -182,15 +190,26 @@ namespace DocumentImageCapture
                     graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-                    SizeF size = graphics.MeasureString(firmText, font);
-                    RectangleF rectF1 = new RectangleF(120, 150, size.Width, size.Height);
-                    graphics.DrawRectangle(Pens.White, Rectangle.Round(rectF1));
-                    graphics.DrawString(firmText, font, brush, new Point(125, 152));
+                    int y = 152, x = 110;
+                    graphics.DrawString(firmText, font, brush, new Point(x, y));
+                    y += Convert.ToInt32(graphics.MeasureString(firmText, font).Height + 2);
 
-                    SizeF size2 = graphics.MeasureString(plateText, font);
-                    RectangleF rectF2 = new RectangleF(120, 152 + size.Height, size.Width, size.Height);
-                    graphics.DrawRectangle(Pens.White, Rectangle.Round(rectF2));
-                    graphics.DrawString(plateText, font, brush, new Point(125, Convert.ToInt32(152 + size.Height)));
+                    graphics.DrawString(plateText, font, brush, new Point(x, y));
+                    y += Convert.ToInt32(graphics.MeasureString(plateText, font).Height + 2);
+
+                    graphics.DrawString(waybillText, font, brush, new Point(x, y));
+                    y += Convert.ToInt32(graphics.MeasureString(waybillText, font).Height + 2);
+
+                    graphics.DrawString(materialText, font, brush, new Point(x, y));
+                    y += Convert.ToInt32(graphics.MeasureString(materialText, font).Height + 2);
+
+                    graphics.DrawString(weightText, font, brush, new Point(x, y));
+                    y += Convert.ToInt32(graphics.MeasureString(weightText, font).Height + 2);
+
+                    graphics.DrawString(weight2Text, font, brush, new Point(x, y));
+                    y += Convert.ToInt32(graphics.MeasureString(weight2Text, font).Height + 2);
+
+                    graphics.DrawString(netText, font, brush, new Point(x, y));
 
                     //Bitmap qrimg = GenerateQR(150, 150, "5691gs01|14700|39700|25000|ASSOH FA MOAYE|5/15 gravier|s1");
                     //if(qrimg != null)

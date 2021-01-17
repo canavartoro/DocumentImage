@@ -118,6 +118,7 @@
     <Compile Include="TcpCaptureServer.cs" />
     <Compile Include="TextTraceListener.cs" />
     <Compile Include="Utility.cs" />
+    <Compile Include="WeighProvider.cs" />
     <Compile Include="XPOHelper.cs" />
     <EmbeddedResource Include="FormDatasource.resx">
       <DependentUpon>FormDatasource.cs</DependentUpon>

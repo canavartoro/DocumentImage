@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -85,7 +87,6 @@ namespace DocumentImageCapture
 
             while (abortListener)
             {
-                Thread.Sleep(1000);
                 try
                 {
                     using (System.Net.Sockets.TcpClient client = server.AcceptTcpClient())
@@ -107,38 +108,23 @@ namespace DocumentImageCapture
                                         {
                                             if (_kameralar != null && _kameralar.Count > 0)
                                             {
-                                                try
+                                                long id = 0;
+                                                if (long.TryParse(strarr[1], out id))
                                                 {
-                                                    using (SqlConnection conn = new SqlConnection(AppSettingHelper.Default.GetSqlConnectionString()))
+                                                    List<byte[]> images = new List<byte[]>();
+                                                    for (int loop = 0; loop < _kameralar.Count; loop++)
                                                     {
-                                                        conn.Open();
-                                                        SqlCommand command = conn.CreateCommand();
-                                                        command.CommandText = "INSERT INTO [dbo].[Weigh_Image] (WaybillId,DocImage) VALUES (@Waybill,@DocImage)";
-                                                        for (int loop = 0; loop < _kameralar.Count; loop++)
+                                                        if (_kameralar[loop].CaptureImage != null)
                                                         {
-                                                            if (_kameralar[loop].CaptureImage != null)
-                                                            {
-                                                                command.Parameters.Clear();
-                                                                byte[] byteimage = _kameralar[loop].CaptureImage.ToArray(); //Kamera.CaptureImage.ToArray();
-                                                                command.Parameters.AddWithValue("Waybill", Convert.ToInt64(strarr[1]));
-                                                                command.Parameters.AddWithValue("DocImage", byteimage);
-                                                                command.ExecuteNonQuery();
-                                                            }
+                                                            byte[] byteimage = _kameralar[loop].CaptureImage.ToArray();
+                                                            images.Add(byteimage);
                                                         }
-                                                        conn.Close();
                                                     }
+                                                    Task.Run(() => AddImage(Convert.ToInt64(strarr[1]), images));
                                                 }
-                                                catch (SqlException sqlexcinsert)
+                                                else
                                                 {
-                                                    Logger.E(sqlexcinsert);
-                                                }
-                                                catch (Exception excinsert)
-                                                {
-                                                    Logger.E(excinsert);
-                                                }
-                                                finally
-                                                {
-                                                    SqlConnection.ClearAllPools();
+                                                    Logger.E("Gelen bilgiler hatalı (seq)!");
                                                 }
                                                 byte[] nullbyt = new byte[512];
                                                 stream.Write(nullbyt, 0, nullbyt.Length);
@@ -176,6 +162,88 @@ namespace DocumentImageCapture
             }
 
             Logger.E(" >> exit");
+        }
+
+        private readonly Font font = new Font("Tahoma", 14, FontStyle.Bold, GraphicsUnit.Pixel);
+        readonly SolidBrush brush = new SolidBrush(Color.DeepSkyBlue);
+
+        private void AddImage(long seq, List<byte[]> images)
+        {
+            try
+            {
+                using (WeighProvider db = new WeighProvider(AppSettingHelper.Default.GetSqlConnectionString()))
+                {
+                    Image bitmap;
+                    WeighModel weigh = db.GetWeigh(seq);
+                    for (int loop = 0; loop < images.Count; loop++)
+                    {
+                        byte[] imagebuff = images[loop];
+                        if (weigh != null)
+                        {
+                            using (var ms = new MemoryStream(images[loop]))
+                            {
+                                bitmap = Image.FromStream(ms);
+                            }
+                            using (Graphics graphics = Graphics.FromImage(bitmap))
+                            {
+                                SolidBrush brush = new SolidBrush(Color.White);
+                                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+                                int y = 152, x = 110;
+
+                                graphics.DrawString(weigh.FirmNameText, font, brush, new Point(x, y));
+                                y += Convert.ToInt32(graphics.MeasureString(weigh.FirmNameText, font).Height + 2);
+
+                                graphics.DrawString(weigh.PlateText, font, brush, new Point(x, y));
+                                y += Convert.ToInt32(graphics.MeasureString(weigh.PlateText, font).Height + 2);
+
+                                graphics.DrawString(weigh.WaybillNoText, font, brush, new Point(x, y));
+                                y += Convert.ToInt32(graphics.MeasureString(weigh.WaybillNoText, font).Height + 2);
+
+                                graphics.DrawString(weigh.MaterialNameText, font, brush, new Point(x, y));
+                                y += Convert.ToInt32(graphics.MeasureString(weigh.MaterialNameText, font).Height + 2);
+
+                                graphics.DrawString(weigh.Weight1Text, font, brush, new Point(x, y));
+                                y += Convert.ToInt32(graphics.MeasureString(weigh.Weight1Text, font).Height + 2);
+
+                                graphics.DrawString(weigh.Weight2Text, font, brush, new Point(x, y));
+                                y += Convert.ToInt32(graphics.MeasureString(weigh.Weight2Text, font).Height + 2);
+
+                                graphics.DrawString(weigh.NetText, font, brush, new Point(x, y));
+
+                                graphics.Flush();
+                                graphics.Dispose();
+                                MemoryStream m = new MemoryStream();
+                                bitmap.Save(m, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                                MemoryStream memoryStream = new MemoryStream();
+                                bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                imagebuff = memoryStream.ToArray();
+                            }
+                            db.AddImage(seq, imagebuff);
+                        }
+                    }
+                }
+            }
+            catch (NullReferenceException nullexcinsert)
+            {
+                Logger.E(nullexcinsert);
+            }
+            catch (SqlException sqlexcinsert)
+            {
+                Logger.E(sqlexcinsert);
+            }
+            catch (Exception excinsert)
+            {
+                Logger.E(excinsert);
+            }
+            finally
+            {
+                SqlConnection.ClearAllPools();
+            }
         }
 
         #region IDisposable

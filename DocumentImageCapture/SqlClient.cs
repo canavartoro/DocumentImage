@@ -534,6 +534,7 @@ namespace DocumentImageCapture
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+            SqlConnection.ClearAllPools();
         }
 
         private bool disposed = false;
