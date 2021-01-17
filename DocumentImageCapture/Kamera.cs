@@ -22,7 +22,7 @@ namespace DocumentImageCapture
     public class Kamera
     {
         [NonSerialized]
-        private System.Windows.Forms.Timer timer, timerCheck;
+        private System.Windows.Forms.Timer timer;
 
         [NonSerialized]
         private DataProvider data;
@@ -84,17 +84,10 @@ namespace DocumentImageCapture
                         render.DrawToDC(hdc);
                         g.ReleaseHdc(hdc);
 
-                        //string filename = string.Concat(Application.StartupPath, "\\", this.Host, "\\CaptureImage.jpeg");
-                        //bitmap.Save(filename, ImageFormat.Jpeg);
-
                         using (MemoryStream memoryStream = new MemoryStream())
                         {
                             bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
                             this.CaptureImage = memoryStream.ToArray();
-                            //if (newimage != null && newimage.Length != 83571)
-                            //{
-                            //    Kamera.CaptureImage = newimage;
-                            //}
                         }
                     }
                 }

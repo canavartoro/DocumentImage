@@ -69,7 +69,18 @@ namespace DocumentImageCapture
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
             AddListener();
             //XPOHelper.XPOStart();
-            Application.Run(new FormMain());
+
+            bool testapp = false;
+            if (args != null && args.Length > 0)
+            {
+                testapp = string.Join("", args).IndexOf("test") != -1;
+            }
+
+            if (testapp)
+                Application.Run(new FormTest());
+            else
+                Application.Run(new FormMain());
+
 
         }
 

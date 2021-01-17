@@ -46,6 +46,7 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.timerStartup = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.btnclose = new System.Windows.Forms.ToolStripButton();
             this.panel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -159,7 +160,8 @@
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAyarlar,
             this.toolStripSeparator1,
-            this.toolStripButton3});
+            this.toolStripButton3,
+            this.btnclose});
             this.toolStrip2.Location = new System.Drawing.Point(0, 0);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Size = new System.Drawing.Size(1349, 27);
@@ -205,6 +207,16 @@
             this.notifyIcon1.Text = "İrsaliye resim ekleme";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            // 
+            // btnclose
+            // 
+            this.btnclose.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnclose.Image = ((System.Drawing.Image)(resources.GetObject("btnclose.Image")));
+            this.btnclose.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnclose.Name = "btnclose";
+            this.btnclose.Size = new System.Drawing.Size(24, 24);
+            this.btnclose.Text = "Kapat";
+            this.btnclose.Click += new System.EventHandler(this.btnclose_Click);
             // 
             // FormMain
             // 
@@ -252,5 +264,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.Panel panelKamera;
+        private System.Windows.Forms.ToolStripButton btnclose;
     }
 }

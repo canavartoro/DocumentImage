@@ -156,5 +156,10 @@ namespace DocumentImageCapture
             }
             Application.DoEvents();
         }
+
+        private void btnclose_Click(object sender, EventArgs e)
+        {
+            Process.GetCurrentProcess().Kill();
+        }
     }
 }
