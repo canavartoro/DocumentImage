@@ -76,7 +76,7 @@ namespace DocumentImageCapture
                     if (elements != null && elements.Count > 0)
                     {
                         //Monitor.Enter(lockObject);
-                        IHTMLImgElement img = (IHTMLImgElement)elements[1].DomElement;
+                        IHTMLImgElement img = (IHTMLImgElement)elements[0].DomElement;
                         IHTMLElementRenderFixed render = (IHTMLElementRenderFixed)img;
                         Bitmap bitmap = new Bitmap(img.width, img.height);
                         Graphics g = Graphics.FromImage(bitmap);

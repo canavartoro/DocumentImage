@@ -83,6 +83,8 @@
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOk.Image = ((System.Drawing.Image)(resources.GetObject("btnOk.Image")));
+            this.btnOk.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnOk.Location = new System.Drawing.Point(415, 23);
             this.btnOk.Margin = new System.Windows.Forms.Padding(4);
             this.btnOk.Name = "btnOk";
@@ -96,6 +98,8 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Image = ((System.Drawing.Image)(resources.GetObject("btnCancel.Image")));
+            this.btnCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCancel.Location = new System.Drawing.Point(581, 23);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
@@ -277,9 +281,11 @@
             // 
             // btnkyeni
             // 
-            this.btnkyeni.Location = new System.Drawing.Point(503, 372);
+            this.btnkyeni.Image = ((System.Drawing.Image)(resources.GetObject("btnkyeni.Image")));
+            this.btnkyeni.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnkyeni.Location = new System.Drawing.Point(439, 362);
             this.btnkyeni.Name = "btnkyeni";
-            this.btnkyeni.Size = new System.Drawing.Size(75, 23);
+            this.btnkyeni.Size = new System.Drawing.Size(99, 33);
             this.btnkyeni.TabIndex = 3;
             this.btnkyeni.Text = "Yeni";
             this.btnkyeni.UseVisualStyleBackColor = true;
@@ -287,9 +293,11 @@
             // 
             // btnsil
             // 
-            this.btnsil.Location = new System.Drawing.Point(582, 372);
+            this.btnsil.Image = ((System.Drawing.Image)(resources.GetObject("btnsil.Image")));
+            this.btnsil.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnsil.Location = new System.Drawing.Point(538, 362);
             this.btnsil.Name = "btnsil";
-            this.btnsil.Size = new System.Drawing.Size(75, 23);
+            this.btnsil.Size = new System.Drawing.Size(99, 33);
             this.btnsil.TabIndex = 4;
             this.btnsil.Text = "Sil";
             this.btnsil.UseVisualStyleBackColor = true;
@@ -297,9 +305,11 @@
             // 
             // btnkaydet
             // 
-            this.btnkaydet.Location = new System.Drawing.Point(661, 372);
+            this.btnkaydet.Image = ((System.Drawing.Image)(resources.GetObject("btnkaydet.Image")));
+            this.btnkaydet.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnkaydet.Location = new System.Drawing.Point(637, 362);
             this.btnkaydet.Name = "btnkaydet";
-            this.btnkaydet.Size = new System.Drawing.Size(75, 23);
+            this.btnkaydet.Size = new System.Drawing.Size(99, 33);
             this.btnkaydet.TabIndex = 5;
             this.btnkaydet.Text = "Kaydet";
             this.btnkaydet.UseVisualStyleBackColor = true;

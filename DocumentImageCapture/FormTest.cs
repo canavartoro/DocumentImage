@@ -12,6 +12,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ZXing;
+using ZXing.QrCode;
+using ZXing.QrCode.Internal;
 
 namespace DocumentImageCapture
 {
@@ -73,7 +76,7 @@ namespace DocumentImageCapture
                                     PictureBox pcb = new PictureBox();
                                     pcb.Dock = DockStyle.Fill;
                                     pcb.SizeMode = PictureBoxSizeMode.StretchImage;
-                                    byte[] imagebytes = (byte[])dt.Rows[0][0];
+                                    byte[] imagebytes = (byte[])dt.Rows[i][0];
                                     using (var ms = new MemoryStream(imagebytes))
                                     {
                                         bitmap = Image.FromStream(ms);
@@ -156,11 +159,58 @@ namespace DocumentImageCapture
                 //using (SqlConnection conn = new SqlConnection("data source=127.0.0.1;persist security info=False;initial catalog=ors_test;Connect Timeout=50;User=sa;Password=20012001;"))
                 using (SqlConnection conn = new SqlConnection(src.ToString()))
                 {
+                    SqlCommand command = conn.CreateCommand();
+                    command.CommandText = string.Concat("SELECT Plate,Weight1,Weight2,Net,FirmName,MaterialName,WaybillNo FROM dbo.Weigh2 WITH (NOLOCK) WHERE seq = 4068");
+                    SqlDataAdapter da = new SqlDataAdapter(command);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    string weightText = string.Concat("Material:", dt.Rows[0]["MaterialName"].GetString(), " Weight1:", dt.Rows[0]["Weight1"].GetDecimal().ToString("N"),
+                        "	Weight2:", dt.Rows[0]["Weight2"].GetDecimal().ToString("N"), "	Net:", dt.Rows[0]["Net"].GetDecimal().ToString("N"));
+                    string firmText = string.Concat("Firm Name:", dt.Rows[0]["FirmName"].GetString());
+                    string plateText = string.Concat("Plate:", dt.Rows[0]["Plate"].GetString(), "    Waybill No:", dt.Rows[0]["WaybillNo"].GetString());
+
+                    Image bitmap = Image.FromFile(op.FileName);
+                    #region Text
+
+                    Font font = new Font("Tahoma", 34, FontStyle.Bold, GraphicsUnit.Pixel);
+                    Point atpoint = new Point(bitmap.Width / 2, bitmap.Height / 2);
+                    SolidBrush brush = new SolidBrush(Color.White);//new SolidBrush(Color.FromArgb(255, 255, 0, 0));
+                    Graphics graphics = Graphics.FromImage(bitmap);
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+                    SizeF size = graphics.MeasureString(firmText, font);
+                    RectangleF rectF1 = new RectangleF(120, 150, size.Width, size.Height);
+                    graphics.DrawRectangle(Pens.White, Rectangle.Round(rectF1));
+                    graphics.DrawString(firmText, font, brush, new Point(125, 152));
+
+                    SizeF size2 = graphics.MeasureString(plateText, font);
+                    RectangleF rectF2 = new RectangleF(120, 152 + size.Height, size.Width, size.Height);
+                    graphics.DrawRectangle(Pens.White, Rectangle.Round(rectF2));
+                    graphics.DrawString(plateText, font, brush, new Point(125, Convert.ToInt32(152 + size.Height)));
+
+                    //Bitmap qrimg = GenerateQR(150, 150, "5691gs01|14700|39700|25000|ASSOH FA MOAYE|5/15 gravier|s1");
+                    //if(qrimg != null)
+                    //{
+                    //    graphics.DrawImage(qrimg, bitmap.Width - 155, 5, 150, 150);
+                    //}
+
+
+                    graphics.Flush();
+                    graphics.Dispose();
+                    MemoryStream m = new MemoryStream();
+                    bitmap.Save(m, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //bitmap.Save(string.Concat(Application.StartupPath, "\\tom.jpg"));
+                    #endregion
+
                     long len = new FileInfo(op.FileName).Length;
                     PictureBox pcb = new PictureBox();
                     pcb.Dock = DockStyle.Fill;
-                    pcb.Image = Image.FromFile(op.FileName);
-                    pcb.SizeMode = PictureBoxSizeMode.CenterImage;
+                    pcb.Image = bitmap;
+                    pcb.SizeMode = PictureBoxSizeMode.StretchImage;
                     TabPage tp = new TabPage();
                     tp.Text = string.Concat(Path.GetFileNameWithoutExtension(op.FileName), " ", FileSizeString(len));
                     tp.Controls.Add(pcb);
@@ -171,7 +221,7 @@ namespace DocumentImageCapture
                     pcb.Image.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
                     byte[] image = memoryStream.ToArray();
                     conn.Open();
-                    SqlCommand command = conn.CreateCommand();
+
                     command.CommandText = "INSERT INTO dbo.Weigh_Image (WaybillId,DocImage,Description,CreateDate) VALUES (@Waybill,@DocImage,'Manuel eklendi',GETDATE())";
                     command.Parameters.AddWithValue("Waybill", Convert.ToInt32(textid.Text));
                     command.Parameters.AddWithValue("DocImage", image);
@@ -347,6 +397,37 @@ namespace DocumentImageCapture
             // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
             // show a single decimal place, and no space.
             return string.Format("{0:0.##} {1}", len, sizes[order]);
+        }
+
+        public static Bitmap GenerateQR(int width, int height, string js)
+        {
+            try
+            {
+                if (js != null)
+                {
+                    IBarcodeWriter barcodeWriter = new BarcodeWriter();
+                    barcodeWriter.Format = BarcodeFormat.QR_CODE;
+                    QrCodeEncodingOptions options = new QrCodeEncodingOptions();
+                    options = new QrCodeEncodingOptions
+                    {
+                        Width = width,
+                        Height = height,
+                        Margin = 0
+                    };
+                    options.Hints.Add(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+                    barcodeWriter.Options = options;
+                    var result = new Bitmap(barcodeWriter.Write(js));
+                    return result;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

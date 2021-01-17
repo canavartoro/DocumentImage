@@ -110,6 +110,8 @@
             // 
             // btnok
             // 
+            this.btnok.Image = ((System.Drawing.Image)(resources.GetObject("btnok.Image")));
+            this.btnok.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnok.Location = new System.Drawing.Point(152, 163);
             this.btnok.Name = "btnok";
             this.btnok.Size = new System.Drawing.Size(95, 29);
@@ -121,6 +123,8 @@
             // btncancel
             // 
             this.btncancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btncancel.Image = ((System.Drawing.Image)(resources.GetObject("btncancel.Image")));
+            this.btncancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btncancel.Location = new System.Drawing.Point(41, 163);
             this.btncancel.Name = "btncancel";
             this.btncancel.Size = new System.Drawing.Size(95, 29);

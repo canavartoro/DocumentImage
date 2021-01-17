@@ -140,6 +140,7 @@ namespace DocumentImageCapture
                         itm.SubItems.Add(kmr.Url);
                         itm.SubItems.Add(kmr.Aktif ? "√" : "");
                         listKamera.Items.Add(itm);
+                        i++;
                     }
                 }
             }
